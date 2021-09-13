@@ -42,12 +42,6 @@ jobs:
       - name: Sleep
         run: /usr/bin/sleep 30s
 
-      - name: NC time
-        run: printf "GET / HTTP/1.0\r\n\r\n" | nc memcached 11211
-
-      - name: NC time
-        run: printf "GET / HTTP/1.0\r\n\r\n" | nc statika 9191
-
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
@@ -56,7 +50,7 @@ jobs:
 
       - name: Run tests
         env:
-          STATIKA_HOST: statika
+          STATIKA_HOST: localhost
           STATIKA_PORT: 9191
           UPLOAD_KEY: TEST_UPLOAD_KEY
         run: yarn test
