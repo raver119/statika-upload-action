@@ -1,3 +1,4 @@
+import "whatwg-fetch"
 import {describe, test, expect, beforeAll, afterEach} from "@jest/globals"
 import { AuthenticationBean, coordinates, Statika} from "statika"
 import { uploadAllFilesInFolder } from "../upload"
@@ -7,11 +8,15 @@ import path from "path"
 import {v4 as uuid} from "uuid";
 
 const api = Statika(coordinates("http", process.env.STATIKA_HOST ?? "localhost", process.env.STATIKA_PORT ?? 7070))
-const bucket = "test_bucket_upload_21"
+const bucket = uuid()
 
 let bean: AuthenticationBean
 beforeAll(async () => {
-    bean = await api.system.issueToken(process.env.UPLOAD_KEY, bucket)
+    try {
+        bean = await api.system.issueToken(process.env.UPLOAD_KEY, bucket)
+    } catch (e) {
+        console.log("Got error: ", e)
+    }
 })
 
 afterEach(async () => {

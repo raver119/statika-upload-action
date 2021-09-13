@@ -1,0 +1,55 @@
+name: Pipeline
+
+on:
+  pull_request:
+    branches: [ master ]
+
+  push:
+    branches: [ master ]
+
+
+jobs:
+  build_test:
+    name: Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      memcached:
+        image: public.br5.tech/memcached
+        ports:
+          - 11211:11211
+
+      statika:
+        image: raver119/statika
+        env:
+          STATIKA_PORT: 9191
+          MASTER_KEY: TEST_MASTER_KEY
+          UPLOAD_KEY: TEST_UPLOAD_KEY
+          ROOT_DIR: /tmp
+          MEMCACHED_HOST: localhost
+        ports:
+          - 9191:9191
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build action
+        run: yarn build:webpack
+
+      - name: Run tests
+        env:
+          STATIKA_HOST: localhost
+          STATIKA_PORT: 9191
+          UPLOAD_KEY: TEST_UPLOAD_KEY
+        run: yarn test
+
+

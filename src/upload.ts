@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import {AuthenticationBean, StatikaApi} from 'statika';
+import "whatwg-fetch"
 
 export async function uploadAllFilesInFolder(api: StatikaApi, bean: AuthenticationBean,  directory: string) {
     // get list of files in the specified directory
