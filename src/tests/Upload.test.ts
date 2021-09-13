@@ -1,3 +1,4 @@
+import "whatwg-fetch"
 import {describe, test, expect, beforeAll, afterEach} from "@jest/globals"
 import { AuthenticationBean, coordinates, Statika} from "statika"
 import { uploadAllFilesInFolder } from "../upload"
