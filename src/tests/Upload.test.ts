@@ -14,6 +14,7 @@ console.log(`Statika endpoint: ${process.env.STATIKA_HOST}:${process.env.STATIKA
 let bean: AuthenticationBean
 beforeAll(async () => {
     bean = await api.system.issueToken(process.env.UPLOAD_KEY, bucket)
+    console.log("Bean: ", bean)
 })
 
 afterEach(async () => {
