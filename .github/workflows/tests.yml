@@ -43,6 +43,9 @@ jobs:
         run: /usr/bin/sleep 30s
 
       - name: NC time
+        run: printf "GET / HTTP/1.0\r\n\r\n" | nc memcached 11211
+
+      - name: NC time
         run: printf "GET / HTTP/1.0\r\n\r\n" | nc statika 9191
 
       - name: Install dependencies
