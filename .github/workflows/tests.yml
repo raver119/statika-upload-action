@@ -40,7 +40,7 @@ jobs:
           node-version: '16'
 
       - name: Sleep
-        run: /usr/bin/sleep 15s
+        run: /usr/bin/sleep 30s
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
