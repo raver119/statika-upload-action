@@ -1,0 +1,75 @@
+{
+  "name": "statika-upload-action",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "rimraf dist/* && tsc --build tsconfig.json",
+    "build:webpack": "webpack --mode=production",
+    "test": "jest --ci=true"
+  },
+  "dependencies": {
+    "@actions/core": "^1.2.6",
+    "statika": "0.0.15",
+    "whatwg-fetch": "^3.5.0",
+    "whatwg-url": "^9.1.0",
+    "w3c-xmlhttprequest": "^3.0.0"
+  },
+  "devDependencies": {
+    "webpack": "^4.46.0",
+    "webpack-cli": "^4.8.0",
+    "@babel/core": "^7.15.5",
+    "@babel/cli": "^7.15.4",
+    "@babel/register": "^7.15.3",
+    "@babel/preset-typescript": "^7.15.0",
+    "@babel/preset-env": "^7.15.6",
+    "@babel/plugin-proposal-class-properties": "^7.14.5",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "webpack-node-externals": "^3.0.0",
+    "babel-loader": "^8.2.2",
+    "typescript": "^4.4.3",
+    "uuid": "^8.3.2",
+    "jest": "^26.6.3",
+    "ts-jest": "^26.5.6",
+    "ts-node": "^10.2.1",
+    "@types/node": "^16.9.1",
+    "@types/whatwg-url": "^8.2.1",
+    "rimraf": "^3.0.2"
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "<rootDir>/setupTests.js"
+    ],
+    "transformIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsconfig": "tsconfig.json"
+      },
+      "google": {}
+    },
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/**/*.schema.ts",
+      "!src/schema/*.ts"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 0,
+        "functions": 0,
+        "lines": 0,
+        "statements": 0
+      }
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "transform": {
+      "\\.(ts)$": "ts-jest",
+      "^.+\\.js$": "babel-jest"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$"
+  }
+}
