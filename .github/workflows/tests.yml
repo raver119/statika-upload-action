@@ -18,7 +18,7 @@ jobs:
       memcached:
         image: public.br5.tech/memcached
         ports:
-          - 11211:11211
+          - 11211/tcp
 
       statika:
         image: raver119/statika
@@ -29,7 +29,7 @@ jobs:
           ROOT_DIR: /tmp
           MEMCACHED_HOST: memcached
         ports:
-          - 9191:9191
+          - 9191/tcp
 
     steps:
       - name: Check out code
@@ -39,14 +39,11 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Sleep
-        run: /usr/bin/sleep 30s
-
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
       - name: Build action
-        run: yarn build
+        run: yarn build:webpack
 
       - name: Run tests
         env:
