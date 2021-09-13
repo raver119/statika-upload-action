@@ -18,7 +18,7 @@ jobs:
       memcached:
         image: public.br5.tech/memcached
         ports:
-          - 11211/11211
+          - 11211:11211
 
       statika:
         image: raver119/statika
@@ -29,7 +29,7 @@ jobs:
           ROOT_DIR: /tmp
           MEMCACHED_HOST: memcached
         ports:
-          - 9191/9191
+          - 9191:9191
 
     steps:
       - name: Check out code
