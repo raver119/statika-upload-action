@@ -15,6 +15,7 @@ inputs:
   bucket:
     description: "bucket where fields should be put. might be skipped, if storage field includes path argument."
     required: false
+    default: ""
 
   directory:
     description: "directory with files to be uploaded"
