@@ -18,7 +18,7 @@ jobs:
       memcached:
         image: public.br5.tech/memcached
         ports:
-          - 11211/tcp
+          - 11211:11211
 
       statika:
         image: raver119/statika
@@ -27,9 +27,9 @@ jobs:
           MASTER_KEY: TEST_MASTER_KEY
           UPLOAD_KEY: TEST_UPLOAD_KEY
           ROOT_DIR: /tmp
-          MEMCACHED_HOST: memcached
+          MEMCACHED_HOST: localhost
         ports:
-          - 9191/tcp
+          - 9191:9191
 
     steps:
       - name: Check out code
