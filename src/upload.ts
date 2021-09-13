@@ -13,7 +13,8 @@ export async function uploadAllFilesInFolder(api: StatikaApi, bean: Authenticati
     for (let file of files) {
         const absolute = path.join(directory, file)
         const content = fs.readFileSync(absolute)
-        await api.storage.uploadFile(bean, file, content)
+        const response = await api.storage.uploadFile(bean, file, content)
+        console.log(`Uploaded ${file} => ${response.filename}`)
     }
 
     return true

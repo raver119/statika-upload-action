@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "rimraf dist/* && tsc --build tsconfig.json",
-    "build:webpack": "webpack --mode=production",
+    "build:webpack": "rimraf dist/* && webpack --mode=production",
     "test": "jest --ci=true"
   },
   "dependencies": {
