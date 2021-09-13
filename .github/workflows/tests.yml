@@ -43,7 +43,7 @@ jobs:
 
       - name: Run tests
         env:
-          STATIKA_HOST: statika,
+          STATIKA_HOST: statika
           STATIKA_PORT: 9191
           UPLOAD_KEY: TEST_UPLOAD_KEY
         run: yarn test
