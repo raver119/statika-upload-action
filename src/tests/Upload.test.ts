@@ -9,6 +9,8 @@ import {v4 as uuid} from "uuid";
 const api = Statika(coordinates("http", process.env.STATIKA_HOST ?? "localhost", process.env.STATIKA_PORT ?? 7070))
 const bucket = "test_bucket_upload_21"
 
+console.log(`Statika endpoint: ${process.env.STATIKA_HOST}:${process.env.STATIKA_PORT}`)
+
 let bean: AuthenticationBean
 beforeAll(async () => {
     bean = await api.system.issueToken(process.env.UPLOAD_KEY, bucket)
