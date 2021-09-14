@@ -97,13 +97,15 @@ function uploadAllFilesInFolder(api, bean, directory) {
         const files = fs_1.default.readdirSync(directory);
         if (files.length === 0)
             throw new Error(`Directory [${directory}] has no files in it!`);
-        // and upload them one by one
-        for (let file of files) {
+        // and upload them one by one as a set of promises
+        const promises = files.map((file) => {
             const absolute = path_1.default.join(directory, file);
             const content = fs_1.default.readFileSync(absolute);
-            const response = yield api.storage.uploadFile(bean, file, content);
-            console.log(`Uploaded ${file} => ${response.filename}`);
-        }
+            console.log(`Uploading ${file} => /${bean.bucket}/${file}`);
+            return api.storage.uploadFile(bean, file, content);
+        });
+        // wait till all promises resolve
+        (yield Promise.all(promises)).map((r) => console.log(`Successfully uploaded ${r.filename}`));
         return true;
     });
 }
