@@ -8,13 +8,16 @@ export async function uploadAllFilesInFolder(api: StatikaApi, bean: Authenticati
   const files = fs.readdirSync(directory);
   if (files.length === 0) throw new Error(`Directory [${directory}] has no files in it!`);
 
-  // and upload them one by one
-  for (let file of files) {
+  // and upload them one by one as a set of promises
+  const promises = files.map((file) => {
     const absolute = path.join(directory, file);
     const content = fs.readFileSync(absolute);
-    const response = await api.storage.uploadFile(bean, file, content);
-    console.log(`Uploaded ${file} => ${response.filename}`);
-  }
+    console.log(`Uploading ${file} => /${bean.bucket}/${file}`);
+    return api.storage.uploadFile(bean, file, content);
+  });
+
+  // wait till all promises resolve
+  (await Promise.all(promises)).map((r) => console.log(`Successfully uploaded ${r.filename}`));
 
   return true;
 }
