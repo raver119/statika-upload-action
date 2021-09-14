@@ -42,8 +42,11 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
+      - name: Check formatting
+        run: yarn check:format
+
       - name: Build action
-        run: yarn build:webpack
+        run: yarn build
 
       - name: Run tests
         env:
@@ -51,5 +54,15 @@ jobs:
           STATIKA_PORT: 9191
           UPLOAD_KEY: TEST_UPLOAD_KEY
         run: yarn test
+
+      - name: Run action locally
+      # Use the action defined in this repository
+        uses: ./
+        with:
+          storage: http://localhost:9191/
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyODUwMGE5My02Y2M1LTQ1NDctYTQ1NS0wZmI3ZTVjOGRlNmYiLCJhdWQiOiJzdGF0aWthIiwiaWF0IjoxNjMxNTk1OTcxLCJCdWNrZXRzIjpbImNzcyJdfQ.Ee2r_JbL2Iczz-nQFZZ149ZuaotLBT2aFO6CUqBNpXQ
+          bucket: css
+          directory: src/tests/
+
 
 
