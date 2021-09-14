@@ -6,7 +6,8 @@
   "scripts": {
     "format": "prettier --write **/*.ts",
     "build": "yarn format && rimraf dist/* lub/* && tsc --build tsconfig.json && ncc build lib/index.js",
-    "test": "jest --ci=true"
+    "test": "jest --ci=true",
+    "check:format": "prettier --check **/*.ts"
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
