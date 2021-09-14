@@ -25,10 +25,10 @@ const utilities_1 = __nccwpck_require__(587);
 const upload_1 = __nccwpck_require__(831);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        const token = core_1.default.getInput('token');
-        const storage = core_1.default.getInput('storage');
-        let bucket = core_1.default.getInput('bucket');
-        const directory = core_1.default.getInput('directory');
+        const token = core_1.default.getInput("token");
+        const storage = core_1.default.getInput("storage");
+        let bucket = core_1.default.getInput("bucket");
+        const directory = core_1.default.getInput("directory");
         const coords = (0, utilities_1.parseStorage)(storage);
         const api = (0, build_1.Statika)((0, build_1.coordinates)(coords.schema, coords.host, coords.port));
         // if bucket variable is defined - use it. use coords.path otherwise
@@ -43,7 +43,7 @@ function run() {
     });
 }
 // invoke action, fail if something's wrong
-run().catch(e => core_1.default.setFailed(e.message));
+run().catch((e) => core_1.default.setFailed(e.message));
 //# sourceMappingURL=index.js.map
 
 /***/ }),
@@ -111,7 +111,7 @@ function parseStorage(address) {
         port = parsed.scheme === "http" ? 80 : 443;
     // path shouldn't be longer than 1 element at this point
     if (parsed.path.length > 1)
-        throw new Error(`Bucket shouldn't be exactly 1 folder, but got multiple: ${JSON.stringify(parsed.path)}`);
+        throw new Error(`Got multiple buckets: ${JSON.stringify(parsed.path)}`);
     return {
         schema: parsed.scheme,
         host: parsed.host,

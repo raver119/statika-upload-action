@@ -10,16 +10,14 @@ export function parseStorage(address: string): {
   const parsed = parseURL(address);
   if (parsed === null) throw new Error(`failed to parse address: [${address}]`);
 
-  if (parsed.scheme !== "http" && parsed.scheme !== "https")
-    throw new Error(`Unsupported protocol: ${parsed.scheme}`);
+  if (parsed.scheme !== "http" && parsed.scheme !== "https") throw new Error(`Unsupported protocol: ${parsed.scheme}`);
 
   // default ports should be processed separately
   let port = parsed.port;
   if (port === null) port = parsed.scheme === "http" ? 80 : 443;
 
   // path shouldn't be longer than 1 element at this point
-  if (parsed.path.length > 1)
-    throw new Error(`Got multiple buckets: ${JSON.stringify(parsed.path)}`);
+  if (parsed.path.length > 1) throw new Error(`Got multiple buckets: ${JSON.stringify(parsed.path)}`);
 
   return {
     schema: parsed.scheme,
