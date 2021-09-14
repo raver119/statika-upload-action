@@ -10,7 +10,7 @@
     "check:format": "prettier --check **/*.ts"
   },
   "dependencies": {
-    "@actions/core": "^1.2.6",
+    "@actions/core": "1.5.0",
     "statika": "0.0.15",
     "whatwg-fetch": "^3.5.0",
     "whatwg-url": "^9.1.0",

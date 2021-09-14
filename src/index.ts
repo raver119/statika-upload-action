@@ -1,4 +1,4 @@
-import core from "@actions/core";
+import * as core from "@actions/core";
 import { Statika, StatikaApi, coordinates, authenticationBean } from "statika/build/";
 import { parseStorage } from "./utilities";
 import { uploadAllFilesInFolder } from "./upload";
