@@ -653,26 +653,160 @@ exports.toCommandProperties = toCommandProperties;
 
 /***/ }),
 
-/***/ 2738:
-/***/ ((module) => {
+/***/ 6463:
+/***/ ((__unused_webpack_module, exports) => {
 
-(function () {
-  "use strict";
+"use strict";
 
-  function btoa(str) {
-    var buffer;
 
-    if (str instanceof Buffer) {
-      buffer = str;
-    } else {
-      buffer = Buffer.from(str.toString(), 'binary');
-    }
+exports.byteLength = byteLength
+exports.toByteArray = toByteArray
+exports.fromByteArray = fromByteArray
 
-    return buffer.toString('base64');
+var lookup = []
+var revLookup = []
+var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
+
+var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+for (var i = 0, len = code.length; i < len; ++i) {
+  lookup[i] = code[i]
+  revLookup[code.charCodeAt(i)] = i
+}
+
+// Support decoding URL-safe base64 strings, as Node.js does.
+// See: https://en.wikipedia.org/wiki/Base64#URL_applications
+revLookup['-'.charCodeAt(0)] = 62
+revLookup['_'.charCodeAt(0)] = 63
+
+function getLens (b64) {
+  var len = b64.length
+
+  if (len % 4 > 0) {
+    throw new Error('Invalid string. Length must be a multiple of 4')
   }
 
-  module.exports = btoa;
-}());
+  // Trim off extra bytes after placeholder bytes are found
+  // See: https://github.com/beatgammit/base64-js/issues/42
+  var validLen = b64.indexOf('=')
+  if (validLen === -1) validLen = len
+
+  var placeHoldersLen = validLen === len
+    ? 0
+    : 4 - (validLen % 4)
+
+  return [validLen, placeHoldersLen]
+}
+
+// base64 is 4/3 + up to two characters of the original data
+function byteLength (b64) {
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+}
+
+function _byteLength (b64, validLen, placeHoldersLen) {
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+}
+
+function toByteArray (b64) {
+  var tmp
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
+
+  var arr = new Arr(_byteLength(b64, validLen, placeHoldersLen))
+
+  var curByte = 0
+
+  // if there are placeholders, only get up to the last complete 4 chars
+  var len = placeHoldersLen > 0
+    ? validLen - 4
+    : validLen
+
+  var i
+  for (i = 0; i < len; i += 4) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 18) |
+      (revLookup[b64.charCodeAt(i + 1)] << 12) |
+      (revLookup[b64.charCodeAt(i + 2)] << 6) |
+      revLookup[b64.charCodeAt(i + 3)]
+    arr[curByte++] = (tmp >> 16) & 0xFF
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  if (placeHoldersLen === 2) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 2) |
+      (revLookup[b64.charCodeAt(i + 1)] >> 4)
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  if (placeHoldersLen === 1) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 10) |
+      (revLookup[b64.charCodeAt(i + 1)] << 4) |
+      (revLookup[b64.charCodeAt(i + 2)] >> 2)
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  return arr
+}
+
+function tripletToBase64 (num) {
+  return lookup[num >> 18 & 0x3F] +
+    lookup[num >> 12 & 0x3F] +
+    lookup[num >> 6 & 0x3F] +
+    lookup[num & 0x3F]
+}
+
+function encodeChunk (uint8, start, end) {
+  var tmp
+  var output = []
+  for (var i = start; i < end; i += 3) {
+    tmp =
+      ((uint8[i] << 16) & 0xFF0000) +
+      ((uint8[i + 1] << 8) & 0xFF00) +
+      (uint8[i + 2] & 0xFF)
+    output.push(tripletToBase64(tmp))
+  }
+  return output.join('')
+}
+
+function fromByteArray (uint8) {
+  var tmp
+  var len = uint8.length
+  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
+  var parts = []
+  var maxChunkLength = 16383 // must be multiple of 3
+
+  // go through the array every three bytes, we'll deal with trailing stuff later
+  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
+    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
+  }
+
+  // pad the end with zeros, but make sure to not forget the extra bytes
+  if (extraBytes === 1) {
+    tmp = uint8[len - 1]
+    parts.push(
+      lookup[tmp >> 2] +
+      lookup[(tmp << 4) & 0x3F] +
+      '=='
+    )
+  } else if (extraBytes === 2) {
+    tmp = (uint8[len - 2] << 8) + uint8[len - 1]
+    parts.push(
+      lookup[tmp >> 10] +
+      lookup[(tmp >> 4) & 0x3F] +
+      lookup[(tmp << 2) & 0x3F] +
+      '='
+    )
+  }
+
+  return parts.join('')
+}
 
 
 /***/ }),
@@ -705,7 +839,7 @@ var Statika = function (coords) {
     return {
         meta: MetaApi_1.metaApi(comm),
         storage: StorageApi_1.storageApi(comm),
-        system: SystemApi_1.systemApi(comm)
+        system: SystemApi_1.systemApi(comm),
     };
 };
 exports.Statika = Statika;
@@ -730,7 +864,7 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.materializeMeta = exports.stringifyMeta = exports.objectifyMeta = exports.pickDefined = void 0;
+exports.makeRandomString = exports.randomInt = exports.randomFloat = exports.materializeMeta = exports.stringifyMeta = exports.objectifyMeta = exports.pickDefined = void 0;
 function pickDefined(val, def) {
     return val === undefined ? def : val;
 }
@@ -768,6 +902,29 @@ var materializeMeta = function (meta) {
     return clone;
 };
 exports.materializeMeta = materializeMeta;
+var randomFloat = function (min, max) {
+    if (max < min)
+        throw new Error("Min <" + min + "> shouldn't be > Max <" + max + ">");
+    if (max === min)
+        return max;
+    max = max - 1;
+    return Math.random() * (max - min) + min;
+};
+exports.randomFloat = randomFloat;
+var randomInt = function (min, max) {
+    return Math.round(exports.randomFloat(min, max));
+};
+exports.randomInt = randomInt;
+function makeRandomString(length) {
+    var charSet = "abcdedfghijklmnopqrstuvwzyz01234567890\nABSC JKW";
+    var b = "";
+    for (var i = 0; i < length; i++) {
+        var random = exports.randomInt(0, charSet.length);
+        b = "" + b + charSet[random];
+    }
+    return b;
+}
+exports.makeRandomString = makeRandomString;
 //# sourceMappingURL=Utilities.js.map
 
 /***/ }),
@@ -818,14 +975,14 @@ var communicator = function (storage) {
             if (!url.startsWith("/"))
                 url = "/" + url;
             return fetch(addr + "/rest/v1" + url, {
-                method: 'POST',
+                method: "POST",
                 credentials: "same-origin",
                 headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': authToken === null || authToken === void 0 ? void 0 : authToken.token
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    Authorization: authToken === null || authToken === void 0 ? void 0 : authToken.token,
                 },
-                body: JSON.stringify(obj)
+                body: JSON.stringify(obj),
             }).then(function (res) {
                 if (res.status === 401)
                     return res.text().then(function (data) {
@@ -850,12 +1007,12 @@ var communicator = function (storage) {
                 input = addr + "/rest/v1" + url;
             }
             return fetch(input, {
-                method: 'DELETE',
+                method: "DELETE",
                 credentials: "same-origin",
                 headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': authToken.token
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    Authorization: authToken.token,
                 },
             }).then(function (res) {
                 if (res.status === 401)
@@ -874,12 +1031,12 @@ var communicator = function (storage) {
             if (!url.startsWith("/"))
                 url = "/" + url;
             return fetch(addr + "/rest/v1" + url, {
-                method: 'GET',
+                method: "GET",
                 credentials: "same-origin",
                 headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': authToken.token
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    Authorization: authToken.token,
                 },
             }).then(function (res) {
                 if (res.status === 401)
@@ -892,7 +1049,7 @@ var communicator = function (storage) {
                     });
                 return res.json();
             });
-        }
+        },
     };
 };
 exports.communicator = communicator;
@@ -914,8 +1071,7 @@ var metaApi = function (communicator) {
             return communicator.post(bean, "/meta/" + bean.bucket + "/" + fileName, Utilities_1.objectifyMeta(metaInfo));
         },
         getMetaInfo: function (bean, fileName) {
-            return communicator.get(bean, "/meta/" + bean.bucket + "/" + fileName)
-                .then(function (data) { return Utilities_1.materializeMeta(data); });
+            return communicator.get(bean, "/meta/" + bean.bucket + "/" + fileName).then(function (data) { return Utilities_1.materializeMeta(data); });
         },
         deleteMetaInfo: function (bean, fileName) {
             return communicator.delete(bean, "/meta/" + bean.bucket + "/" + fileName);
@@ -1058,11 +1214,12 @@ var systemApi = function (communicator) {
             }
             return __awaiter(this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
-                    return [2, communicator.post(undefined, "/auth/upload", { token: upload_key, buckets: buckets })
+                    return [2, communicator
+                            .post(undefined, "/auth/upload", { token: upload_key, buckets: buckets })
                             .then(function (response) { return AuthenticationBean_1.authenticationBean.apply(void 0, __spreadArray([response.token], __read(buckets))); })];
                 });
             });
-        }
+        },
     };
 };
 exports.systemApi = systemApi;
@@ -1082,7 +1239,7 @@ var response = function (code, message) {
     if (message === void 0) { message = ""; }
     return {
         statusCode: code,
-        message: message
+        message: message,
     };
 };
 exports.response = response;
@@ -1123,7 +1280,7 @@ exports.isAuthenticationResponse = isAuthenticationResponse;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.fileEntry = void 0;
 var fileEntry = function (fileName) { return ({
-    filename: fileName
+    filename: fileName,
 }); };
 exports.fileEntry = fileEntry;
 //# sourceMappingURL=FileEntry.js.map
@@ -1225,44 +1382,20 @@ exports.listResponse = listResponse;
 /***/ }),
 
 /***/ 6634:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
-var __read = (this && this.__read) || function (o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-};
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.bufferUploadRequest = void 0;
-var btoa_1 = __importDefault(__nccwpck_require__(2738));
+var base64_js_1 = __nccwpck_require__(6463);
 var bufferUploadRequest = function (bucket, fileName, buffer, meta) {
     if (meta === void 0) { meta = undefined; }
     return {
         filename: fileName,
         bucket: bucket,
         meta: meta,
-        payload: btoa_1.default(String.fromCharCode.apply(String, __spreadArray([], __read(new Uint8Array(buffer)))))
+        payload: base64_js_1.fromByteArray(new Uint8Array(buffer)),
     };
 };
 exports.bufferUploadRequest = bufferUploadRequest;
