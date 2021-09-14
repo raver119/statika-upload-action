@@ -61,7 +61,10 @@ function run() {
     });
 }
 // invoke action, fail if something's wrong
-run().catch((e) => core.setFailed(`Action failed with exception: ${e.message}`));
+run().catch((e) => {
+    console.log(e);
+    core.setFailed(`Action failed with exception: ${e.message}`);
+});
 //# sourceMappingURL=index.js.map
 
 /***/ }),
