@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@actions/core": "1.5.0",
-    "statika": "0.0.15",
+    "statika": "0.0.16",
     "whatwg-fetch": "^3.5.0",
     "whatwg-url": "^9.1.0",
     "w3c-xmlhttprequest": "^3.0.0",
