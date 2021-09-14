@@ -3,6 +3,9 @@ import { Statika, StatikaApi, coordinates, authenticationBean } from "statika/bu
 import { parseStorage } from "./utilities";
 import { uploadAllFilesInFolder } from "./upload";
 
+// seems to be required
+global.XMLHttpRequest = require("w3c-xmlhttprequest").XMLHttpRequest;
+
 async function run() {
   const token = core.getInput("token");
   const storage = core.getInput("storage");
