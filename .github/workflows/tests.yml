@@ -62,7 +62,7 @@ jobs:
           storage: http://localhost:9191/
           token: 123456812
           bucket: css
-          directory: ./
+          directory: src/tests/
 
 
 
