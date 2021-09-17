@@ -21,6 +21,16 @@ inputs:
     description: "directory with files to be uploaded"
     required: true
 
+  regex:
+    description: "regular expression to filter files. Only matches will be uploaded."
+    required: false
+    default: ""
+
+  verbose:
+    description: "print various messages during the upload. either \"true\" or \"false\""
+    required: false
+    default: "false"
+
 runs:
   using: "node12"
   main: "dist/index.js"

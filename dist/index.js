@@ -1,6 +1,21 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 3707:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.filterFiles = void 0;
+function filterFiles(regex, ...files) {
+    return files.filter(f => (regex === "" ? true : new RegExp(regex, "g").test(f)));
+}
+exports.filterFiles = filterFiles;
+//# sourceMappingURL=filter.js.map
+
+/***/ }),
+
 /***/ 4822:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -47,6 +62,8 @@ function run() {
         const storage = core.getInput("storage");
         let bucket = core.getInput("bucket");
         const directory = core.getInput("directory");
+        const regex = core.getInput("regex");
+        const verbose = core.getInput("verbose") === "true";
         const coords = (0, utilities_1.parseStorage)(storage);
         const api = (0, build_1.Statika)((0, build_1.coordinates)(coords.schema, coords.host, coords.port));
         // if bucket variable is defined - use it. use coords.path otherwise
@@ -57,11 +74,11 @@ function run() {
             bucket = coords.path;
         }
         // upload all files to the remote server
-        yield (0, upload_1.uploadAllFilesInFolder)(api, (0, build_1.authenticationBean)(token, bucket), directory);
+        yield (0, upload_1.uploadAllFilesInFolder)(api, (0, build_1.authenticationBean)(token, bucket), directory, regex, verbose);
     });
 }
 // invoke action, fail if something's wrong
-run().catch((e) => {
+run().catch(e => {
     console.log(e);
     core.setFailed(`Action failed with exception: ${e.message}`);
 });
@@ -91,21 +108,25 @@ exports.uploadAllFilesInFolder = void 0;
 const fs_1 = __importDefault(__nccwpck_require__(5747));
 const path_1 = __importDefault(__nccwpck_require__(5622));
 __nccwpck_require__(664);
-function uploadAllFilesInFolder(api, bean, directory) {
+const filter_1 = __nccwpck_require__(3707);
+function uploadAllFilesInFolder(api, bean, directory, regex = "", verbose = false) {
     return __awaiter(this, void 0, void 0, function* () {
         // get list of files in the specified directory
         const files = fs_1.default.readdirSync(directory);
         if (files.length === 0)
             throw new Error(`Directory [${directory}] has no files in it!`);
         // and upload them one by one as a set of promises
-        const promises = files.map((file) => {
+        const promises = (0, filter_1.filterFiles)(regex, ...files).map(file => {
             const absolute = path_1.default.join(directory, file);
             const content = fs_1.default.readFileSync(absolute);
-            console.log(`Uploading ${file} => /${bean.bucket}/${file}`);
+            if (verbose)
+                console.log(`Uploading ${file} => /${bean.bucket}/${file}`);
             return api.storage.uploadFile(bean, file, content);
         });
-        // wait till all promises resolve
-        (yield Promise.all(promises)).map((r) => console.log(`Successfully uploaded ${r.filename}`));
+        (yield Promise.all(promises)).map(r => {
+            if (verbose)
+                console.log(`Successfully uploaded ${r.filename}`);
+        });
         return true;
     });
 }
