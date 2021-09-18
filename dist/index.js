@@ -86,6 +86,52 @@ run().catch(e => {
 
 /***/ }),
 
+/***/ 7118:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.readDirectoryRecursively = void 0;
+const fs_1 = __importDefault(__nccwpck_require__(5747));
+const path_1 = __importDefault(__nccwpck_require__(5622));
+/**
+ * This function scans given directly recursively, and return list of files relative to entry folder
+ * @param directory
+ * @returns list of file names, relative to the directoy
+ */
+function readDirectoryRecursively(directory) {
+    // scan files recursively AND make paths relative
+    return isDirectory(directory)
+        ? _readDirectoryRecursively(directory).map(d => d.replace(`${directory}${path_1.default.sep}`, ""))
+        : [directory];
+}
+exports.readDirectoryRecursively = readDirectoryRecursively;
+function _readDirectoryRecursively(directory) {
+    const result = [];
+    const initial = fs_1.default.readdirSync(directory);
+    for (let entry of initial) {
+        const absolute = path_1.default.join(directory, entry);
+        if (isDirectory(absolute)) {
+            result.push(..._readDirectoryRecursively(absolute));
+        }
+        else {
+            result.push(absolute);
+        }
+    }
+    return result;
+}
+function isDirectory(path) {
+    const stats = fs_1.default.statSync(path);
+    return stats.isDirectory();
+}
+//# sourceMappingURL=scanner.js.map
+
+/***/ }),
+
 /***/ 4831:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -109,10 +155,11 @@ const fs_1 = __importDefault(__nccwpck_require__(5747));
 const path_1 = __importDefault(__nccwpck_require__(5622));
 __nccwpck_require__(664);
 const filter_1 = __nccwpck_require__(3707);
+const scanner_1 = __nccwpck_require__(7118);
 function uploadAllFilesInFolder(api, bean, directory, regex = "", verbose = false) {
     return __awaiter(this, void 0, void 0, function* () {
         // get list of files in the specified directory
-        const files = fs_1.default.readdirSync(directory);
+        const files = (0, scanner_1.readDirectoryRecursively)(directory);
         if (files.length === 0)
             throw new Error(`Directory [${directory}] has no files in it!`);
         // and upload them one by one as a set of promises
