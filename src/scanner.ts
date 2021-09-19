@@ -14,10 +14,10 @@ export function readDirectoryRecursively(directory: string): string[] {
     console.log(`Updated directory: ${directory}`)
   }
 
+  const prefix = directory.endsWith(path.sep) ? directory : `${directory}${path.sep}`
+
   // scan files recursively AND make paths relative
-  return isDirectory(directory)
-    ? _readDirectoryRecursively(directory).map(d => d.replace(`${directory}${path.sep}`, ""))
-    : [directory]
+  return isDirectory(directory) ? _readDirectoryRecursively(directory).map(d => d.replace(prefix, "")) : [directory]
 }
 
 function _readDirectoryRecursively(directory: string): string[] {
@@ -25,6 +25,7 @@ function _readDirectoryRecursively(directory: string): string[] {
   const initial = fs.readdirSync(directory)
 
   for (let entry of initial) {
+    console.log(`Processing entry: ${entry}`)
     const absolute = path.join(directory, entry)
     if (isDirectory(absolute)) {
       result.push(..._readDirectoryRecursively(absolute))

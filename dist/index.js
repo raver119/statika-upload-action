@@ -110,16 +110,16 @@ function readDirectoryRecursively(directory) {
         directory = path_1.default.join(process.cwd(), directory);
         console.log(`Updated directory: ${directory}`);
     }
+    const prefix = directory.endsWith(path_1.default.sep) ? directory : `${directory}${path_1.default.sep}`;
     // scan files recursively AND make paths relative
-    return isDirectory(directory)
-        ? _readDirectoryRecursively(directory).map(d => d.replace(`${directory}${path_1.default.sep}`, ""))
-        : [directory];
+    return isDirectory(directory) ? _readDirectoryRecursively(directory).map(d => d.replace(prefix, "")) : [directory];
 }
 exports.readDirectoryRecursively = readDirectoryRecursively;
 function _readDirectoryRecursively(directory) {
     const result = [];
     const initial = fs_1.default.readdirSync(directory);
     for (let entry of initial) {
+        console.log(`Processing entry: ${entry}`);
         const absolute = path_1.default.join(directory, entry);
         if (isDirectory(absolute)) {
             result.push(..._readDirectoryRecursively(absolute));

@@ -42,6 +42,23 @@ describe("Scanner tests", () => {
     ])
   })
 
+  test("relative path no nested", async () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "no-nested-"))
+    const base = tmp.replace(`${os.tmpdir}${path.sep}`, "")
+    const files = putRandomFiles(tmp, 3)
+
+    // change current working dir, so test will be able to use relative path for search
+    process.chdir(os.tmpdir())
+
+    const folders = [base, `${base}${path.sep}`]
+
+    for (let folder of folders) {
+      const scanned = readDirectoryRecursively(folder)
+      console.log(scanned)
+      expect(scanned.map(d => files.find(f => d == f) === d)).toStrictEqual([true, true, true])
+    }
+  })
+
   test("relative path single nested", async () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "single-nested-"))
     const base = tmp.replace(`${os.tmpdir}${path.sep}`, "")
@@ -52,7 +69,11 @@ describe("Scanner tests", () => {
     // change current working dir, so test will be able to use relative path for search
     process.chdir(os.tmpdir())
 
-    const scanned = readDirectoryRecursively(base)
-    expect(scanned.map(d => files.find(f => d == f) === d)).toStrictEqual([true, true, true])
+    const folders = [base, `${base}${path.sep}`]
+
+    for (let folder of folders) {
+      const scanned = readDirectoryRecursively(folder)
+      expect(scanned.map(d => files.find(f => d == f) === d)).toStrictEqual([true, true, true])
+    }
   })
 })
