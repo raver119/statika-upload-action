@@ -7,6 +7,10 @@ import path from "path"
  * @returns list of file names, relative to the directoy
  */
 export function readDirectoryRecursively(directory: string): string[] {
+  if (!path.isAbsolute(directory)) {
+    directory = path.join(process.cwd(), directory)
+  }
+
   // scan files recursively AND make paths relative
   return isDirectory(directory)
     ? _readDirectoryRecursively(directory).map(d => d.replace(`${directory}${path.sep}`, ""))

@@ -41,4 +41,18 @@ describe("Scanner tests", () => {
       true,
     ])
   })
+
+  test("relative path single nested", async () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "single-nested-"))
+    const base = tmp.replace(`${os.tmpdir}${path.sep}`, "")
+    const tmpNested = fs.mkdtempSync(path.join(tmp, "sub-"))
+    const subFolder = tmpNested.replace(`${tmp}${path.sep}`, "")
+    const files = putRandomFiles(tmpNested, 3).map(f => `${subFolder}${path.sep}${f}`)
+
+    // change current working dir, so test will be able to use relative path for search
+    process.chdir(os.tmpdir())
+
+    const scanned = readDirectoryRecursively(base)
+    expect(scanned.map(d => files.find(f => d == f) === d)).toStrictEqual([true, true, true])
+  })
 })
