@@ -7,8 +7,11 @@ import path from "path"
  * @returns list of file names, relative to the directoy
  */
 export function readDirectoryRecursively(directory: string): string[] {
+  console.log(`Current directory: ${process.cwd()}`)
+  console.log(`Target directory: ${directory}`)
   if (!path.isAbsolute(directory)) {
     directory = path.join(process.cwd(), directory)
+    console.log(`Updated directory: ${directory}`)
   }
 
   // scan files recursively AND make paths relative

@@ -104,8 +104,11 @@ const path_1 = __importDefault(__nccwpck_require__(5622));
  * @returns list of file names, relative to the directoy
  */
 function readDirectoryRecursively(directory) {
+    console.log(`Current directory: ${process.cwd()}`);
+    console.log(`Target directory: ${directory}`);
     if (!path_1.default.isAbsolute(directory)) {
         directory = path_1.default.join(process.cwd(), directory);
+        console.log(`Updated directory: ${directory}`);
     }
     // scan files recursively AND make paths relative
     return isDirectory(directory)
