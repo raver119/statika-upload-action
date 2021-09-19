@@ -3,6 +3,7 @@ import path from "path"
 import {AuthenticationBean, StatikaApi} from "statika"
 import "whatwg-fetch"
 import {filterFiles} from "./filter"
+import {readDirectoryRecursively} from "./scanner"
 
 export async function uploadAllFilesInFolder(
   api: StatikaApi,
@@ -12,7 +13,7 @@ export async function uploadAllFilesInFolder(
   verbose: boolean = false
 ) {
   // get list of files in the specified directory
-  const files = fs.readdirSync(directory)
+  const files = readDirectoryRecursively(directory, verbose)
   if (files.length === 0) throw new Error(`Directory [${directory}] has no files in it!`)
 
   // and upload them one by one as a set of promises

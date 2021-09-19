@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
-    "format": "prettier --write **/*.ts **/*.test.ts",
+    "format": "prettier --write src/",
     "build": "yarn format && rimraf dist/* lub/* && tsc --build tsconfig.json && ncc build lib/index.js",
     "test": "jest --ci=true",
     "check:format": "prettier --check **/*.ts"

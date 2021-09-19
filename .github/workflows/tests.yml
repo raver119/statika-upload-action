@@ -63,6 +63,7 @@ jobs:
           token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyODUwMGE5My02Y2M1LTQ1NDctYTQ1NS0wZmI3ZTVjOGRlNmYiLCJhdWQiOiJzdGF0aWthIiwiaWF0IjoxNjMxNTk1OTcxLCJCdWNrZXRzIjpbImNzcyJdfQ.Ee2r_JbL2Iczz-nQFZZ149ZuaotLBT2aFO6CUqBNpXQ
           bucket: css
           directory: src/tests/
+          verbose: true
 
 
 
