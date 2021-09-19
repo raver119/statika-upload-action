@@ -6,12 +6,12 @@ import path from "path"
  * @param directory
  * @returns list of file names, relative to the directoy
  */
-export function readDirectoryRecursively(directory: string): string[] {
-  console.log(`Current directory: ${process.cwd()}`)
-  console.log(`Target directory: ${directory}`)
+export function readDirectoryRecursively(directory: string, verbose = false): string[] {
+  if (verbose) console.log(`Current directory: ${process.cwd()}`)
+  if (verbose) console.log(`Target directory: ${directory}`)
   if (!path.isAbsolute(directory)) {
     directory = path.join(process.cwd(), directory)
-    console.log(`Updated directory: ${directory}`)
+    if (verbose) console.log(`Updated directory: ${directory}`)
   }
 
   const prefix = directory.endsWith(path.sep) ? directory : `${directory}${path.sep}`
@@ -20,12 +20,12 @@ export function readDirectoryRecursively(directory: string): string[] {
   return isDirectory(directory) ? _readDirectoryRecursively(directory).map(d => d.replace(prefix, "")) : [directory]
 }
 
-function _readDirectoryRecursively(directory: string): string[] {
+function _readDirectoryRecursively(directory: string, verbose = false): string[] {
   const result: string[] = []
   const initial = fs.readdirSync(directory)
 
   for (let entry of initial) {
-    console.log(`Processing entry: ${entry}`)
+    if (verbose) console.log(`Processing entry: ${entry}`)
     const absolute = path.join(directory, entry)
     if (isDirectory(absolute)) {
       result.push(..._readDirectoryRecursively(absolute))

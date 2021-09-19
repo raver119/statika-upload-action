@@ -103,23 +103,27 @@ const path_1 = __importDefault(__nccwpck_require__(5622));
  * @param directory
  * @returns list of file names, relative to the directoy
  */
-function readDirectoryRecursively(directory) {
-    console.log(`Current directory: ${process.cwd()}`);
-    console.log(`Target directory: ${directory}`);
+function readDirectoryRecursively(directory, verbose = false) {
+    if (verbose)
+        console.log(`Current directory: ${process.cwd()}`);
+    if (verbose)
+        console.log(`Target directory: ${directory}`);
     if (!path_1.default.isAbsolute(directory)) {
         directory = path_1.default.join(process.cwd(), directory);
-        console.log(`Updated directory: ${directory}`);
+        if (verbose)
+            console.log(`Updated directory: ${directory}`);
     }
     const prefix = directory.endsWith(path_1.default.sep) ? directory : `${directory}${path_1.default.sep}`;
     // scan files recursively AND make paths relative
     return isDirectory(directory) ? _readDirectoryRecursively(directory).map(d => d.replace(prefix, "")) : [directory];
 }
 exports.readDirectoryRecursively = readDirectoryRecursively;
-function _readDirectoryRecursively(directory) {
+function _readDirectoryRecursively(directory, verbose = false) {
     const result = [];
     const initial = fs_1.default.readdirSync(directory);
     for (let entry of initial) {
-        console.log(`Processing entry: ${entry}`);
+        if (verbose)
+            console.log(`Processing entry: ${entry}`);
         const absolute = path_1.default.join(directory, entry);
         if (isDirectory(absolute)) {
             result.push(..._readDirectoryRecursively(absolute));
@@ -165,7 +169,7 @@ const scanner_1 = __nccwpck_require__(7118);
 function uploadAllFilesInFolder(api, bean, directory, regex = "", verbose = false) {
     return __awaiter(this, void 0, void 0, function* () {
         // get list of files in the specified directory
-        const files = (0, scanner_1.readDirectoryRecursively)(directory);
+        const files = (0, scanner_1.readDirectoryRecursively)(directory, verbose);
         if (files.length === 0)
             throw new Error(`Directory [${directory}] has no files in it!`);
         // and upload them one by one as a set of promises

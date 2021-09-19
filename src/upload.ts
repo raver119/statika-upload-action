@@ -13,7 +13,7 @@ export async function uploadAllFilesInFolder(
   verbose: boolean = false
 ) {
   // get list of files in the specified directory
-  const files = readDirectoryRecursively(directory)
+  const files = readDirectoryRecursively(directory, verbose)
   if (files.length === 0) throw new Error(`Directory [${directory}] has no files in it!`)
 
   // and upload them one by one as a set of promises
